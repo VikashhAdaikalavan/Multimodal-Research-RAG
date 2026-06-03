@@ -1,8 +1,10 @@
 import base64
 import os
+import io
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
+from PIL import Image
 
 
 class ImageParser:
@@ -19,12 +21,22 @@ class ImageParser:
         self.llm = None
 
     def load_model(self):
-        self.llm = ChatOllama(model=self.VISION_MODEL, temperature=0)
+        self.llm = ChatOllama(model=self.VISION_MODEL,temperature=0,num_ctx=2048)
         print(f"  Vision model ready  →  {self.VISION_MODEL}")
 
+    
     def _image_to_base64(self, image_path: str) -> str:
-        with open(image_path, "rb") as f:
-            return base64.b64encode(f.read()).decode("utf-8")
+        img = Image.open(image_path)
+        print(f"Image size: {img.width}x{img.height}")
+
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        img.thumbnail((1024, 1024))
+
+        buffer = io.BytesIO()
+        img.save(buffer, format="JPEG", quality=85)
+
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
     def _describe_image(self, image_path: str) -> str:
         ext = os.path.splitext(image_path)[1].lower()
@@ -45,7 +57,7 @@ class ImageParser:
         Cover ALL of the following that apply:
 
         1. Overall scene / subject — what is shown?
-        2. Drone / UAV type, model markings, or identifying features (if any).
+        2. Colour, model markings, or identifying features (if any).
         3. Components visible: rotors, arms, frame, cameras, sensors, payload, landing gear, etc.
         4. Text, labels, callouts, or annotations present in the image.
         5. Diagrams, charts, schematics, or graphs — describe axes, values, legends, and what they communicate.
@@ -61,8 +73,13 @@ class ImageParser:
              "image_url": f"data:{mime};base64,{image_b64}"}
         ])
 
-        response = self.llm.invoke([message])
-        return response.content.strip()
+        try:
+            response = self.llm.invoke([message])
+            return response.content.strip()
+
+        except Exception as e:
+            print(f"Vision processing failed: {e}")
+            return ""
 
     def parse_image(self, image_path: str) -> list[Document]:
         """

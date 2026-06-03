@@ -82,6 +82,7 @@ def run_ingest(embedding_model, retrieval: Retriever) -> None:
 
         # 3 — build ChromaDB
         _thinking_dots("Writing embeddings to ChromaDB")
+        retrieval.release()   
         vectordb = VectorDatabase()
         vectordb.create_vector_store(chunks, embedding_model)
         _ok("Vector database rebuilt successfully.")
@@ -312,5 +313,5 @@ if __name__ == "__main__":
         print()
         read_aloud = input("  Want me to read that out? [y/n] ").strip().lower()
         if read_aloud == "y":
-            _typing("  Reading…")
+            _typing(" Reading…")
             speaker.speak(response)

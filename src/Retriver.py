@@ -17,6 +17,14 @@ class Retriever:
 
     def filter_relevant_documents(self, docs, threshold: float = 0.85):
         return [(doc, score) for doc, score in docs if score < threshold]
+    
+    def release(self):
+        if self.vector_store is not None:
+            try:
+                self.vector_store._client.close()
+            except Exception:
+                pass
+            self.vector_store = None
 
     def build_prompt(self, query: str, docs: list) -> str:
         context_blocks = ""

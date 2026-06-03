@@ -33,7 +33,17 @@ class VectorDatabase:
             chunks = create_chunks(docs)
 
         if os.path.exists(self.db_path):
-            shutil.rmtree(self.db_path)
+            for _ in range(5):
+                try:
+                    shutil.rmtree(self.db_path)
+                    break
+                except PermissionError:
+                    import time
+                    time.sleep(1)
+            else:
+                raise RuntimeError(
+                    "Database is still locked after waiting."
+                )
 
         self.vector_store = Chroma.from_documents(
             documents=chunks,
@@ -57,6 +67,13 @@ class VectorDatabase:
             embedding_function=embedding_model
         )
         return self.vector_store
+    
+    def close(self):
+        try:
+            self.vector_store._client.close()
+        except:
+            pass
+        self.vector_store = None
 
     def get_vector_store(self):
         return self.vector_store

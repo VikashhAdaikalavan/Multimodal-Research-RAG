@@ -83,9 +83,18 @@ def run_ingest(embedding_model, retrieval: Retriever) -> None:
 
         # 3 — build ChromaDB
         _thinking_dots("Writing embeddings to ChromaDB")
-        retrieval.release()   
+
+        retrieval.release()
+        retrieval.close()
+        gc.collect()
+        time.sleep(2)
+
+        _thinking_dots("Writing embeddings to ChromaDB")
         vectordb = VectorDatabase()
         vectordb.create_vector_store(chunks, embedding_model)
+        vectordb.close()
+        del vectordb
+        gc.collect()
         _ok("Vector database rebuilt successfully.")
 
         # 4 — hot-swap the retriever so no restart is needed
@@ -272,8 +281,7 @@ if __name__ == "__main__":
 
         elif choice == "5":
 
-            retrieval.vector_store = None
-            gc.collect()
+            retrieval.close()
             
             _typing(
                 "\n  Thanks for using the Research Assistant. "

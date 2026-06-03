@@ -1,4 +1,5 @@
 from langchain_chroma import Chroma
+import gc
 
 class Retriever:
     def __init__(self):
@@ -25,6 +26,10 @@ class Retriever:
             except Exception:
                 pass
             self.vector_store = None
+
+    def close(self):
+        self.vector_store = None
+        gc.collect()
 
     def build_prompt(self, query: str, docs: list) -> str:
         context_blocks = ""

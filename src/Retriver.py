@@ -6,7 +6,7 @@ class Retriever:
 
     def load_vector_store(self, embedding_model):
         self.vector_store = Chroma(
-            persist_directory= r"D:\DRDO PROJECT\GenAI\ChromaDB",
+            persist_directory= r"D:\DRDO PROJECT\RAG Assistant\ChromaDB",
             embedding_function=embedding_model
         )
 

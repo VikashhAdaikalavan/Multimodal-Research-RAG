@@ -6,7 +6,7 @@ import shutil
 
 
 class VectorDatabase:
-    def __init__(self, db_path: str = r"D:\DRDO PROJECT\GenAI\ChromaDB"):
+    def __init__(self, db_path: str = r"D:\DRDO PROJECT\RAG Assistant\ChromaDB"):
         self.db_path = db_path
         self.vector_store = None
         self._embedding_model = None

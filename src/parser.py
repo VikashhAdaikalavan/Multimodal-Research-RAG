@@ -19,8 +19,7 @@ def load_all_documents(data_folder: str = None):
     """
 
     if data_folder is None:
-        # Default path — update this to match your machine
-        data_folder = r"D:\DRDO PROJECT\GenAI\Data"
+        data_folder = r"D:\DRDO PROJECT\RAG Assistant\Data"
 
     all_documents = []
 

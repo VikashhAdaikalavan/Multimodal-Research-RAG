@@ -13,6 +13,7 @@ from Image_Input import ImageInput
 from Speech_Output import Speaker
 from vectordb import VectorDatabase
 from parser import load_all_documents
+import gc
 
 load_dotenv()
 
@@ -54,7 +55,7 @@ def _warn(msg: str):
 # Ingest — build / rebuild ChromaDB from scratch
 # ──────────────────────────────────────────────────────────────
 
-DB_PATH = r"D:\DRDO PROJECT\GenAI\ChromaDB"
+DB_PATH = r"D:\DRDO PROJECT\RAG Assistant\ChromaDB"
 
 def run_ingest(embedding_model, retrieval: Retriever) -> None:
     """
@@ -270,6 +271,10 @@ if __name__ == "__main__":
             continue                        # back to menu, no query to process
 
         elif choice == "5":
+
+            retrieval.vector_store = None
+            gc.collect()
+            
             _typing(
                 "\n  Thanks for using the Research Assistant. "
                 "Good luck with your research!\n"
@@ -313,5 +318,5 @@ if __name__ == "__main__":
         print()
         read_aloud = input("  Want me to read that out? [y/n] ").strip().lower()
         if read_aloud == "y":
-            _typing(" Reading…")
+            _typing("Reading…")
             speaker.speak(response)

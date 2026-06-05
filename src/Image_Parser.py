@@ -15,7 +15,7 @@ class ImageParser:
     """
 
     # llava is the standard vision model available via Ollama
-    VISION_MODEL = "llava"
+    VISION_MODEL = "qwen2.5vl:3b"
 
     def __init__(self):
         self.llm = None
@@ -31,7 +31,7 @@ class ImageParser:
 
         if img.mode != "RGB":
             img = img.convert("RGB")
-        img.thumbnail((1024, 1024))
+        img.thumbnail((512, 512))
 
         buffer = io.BytesIO()
         img.save(buffer, format="JPEG", quality=85)
@@ -51,20 +51,21 @@ class ImageParser:
         mime = mime_map.get(ext, "image/jpeg")
         image_b64 = self._image_to_base64(image_path)
 
-        prompt = """You are a technical document analyser specialising in drone and aerospace systems.
+        prompt = """Analyze this image and identify any machine, equipment, vehicle, or technical system present.
 
-        Describe this image in full detail for the purpose of building a searchable knowledge base.
-        Cover ALL of the following that apply:
+        Provide:
 
-        1. Overall scene / subject — what is shown?
-        2. Colour, model markings, or identifying features (if any).
-        3. Components visible: rotors, arms, frame, cameras, sensors, payload, landing gear, etc.
-        4. Text, labels, callouts, or annotations present in the image.
-        5. Diagrams, charts, schematics, or graphs — describe axes, values, legends, and what they communicate.
-        6. Technical specifications or numerical data visible.
-        7. Any context clues: environment, scale, colour coding, connectors, materials.
+        Machine name and type (We ned to know the name of teh machine / equipment).
+        Manufacturer, model, or designation if visible.
+        Major visible components and their functions.
+        Machine purpose and likely application.
+        All visible text, labels, logos, and markings.
+        Physical appearance, color, shape, and distinguishing features.
+        Environment and operating context.
+        Condition (new, used, damaged, etc.).
+        20-30 technical keywords for search and retrieval.
 
-        Be factual and exhaustive. Use technical vocabulary. Do NOT speculate beyond what is visible.
+        Focus on factual observations. If identification is uncertain, provide the most likely possibilities and state your confidence.
         """
 
         message = HumanMessage(content=[
@@ -95,4 +96,5 @@ class ImageParser:
                 "file":   os.path.basename(image_path),
             }
         )
+        print(doc)
         return [doc]

@@ -1,6 +1,6 @@
 # Multimodal Research RAG
 
-A local web application for searching and asking questions about drone research papers and documents. It lets you type queries, record voice questions, or upload images (like schematics or photos of drones). The system retrieves relevant documentation from a vector database and answers using an ensemble of local models.
+A local web application for searching and asking questions about research papers and documents. It lets you type queries, record voice questions, or upload images (like schematics or photos of drones). The system retrieves relevant documentation from a vector database and answers using an ensemble of local models.
 
 The Rag is built using Langchain and Ollama models
 The backend is built with FastAPI and the frontend is standard HTML, CSS, and plain JavaScript (no React or build steps needed) using Google Antigravity.

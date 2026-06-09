@@ -22,7 +22,10 @@ class ImageParser:
 
     def load_model(self):
         self.llm = ChatOllama(model=self.VISION_MODEL,temperature=0,num_ctx=2048)
-        print(f"  Vision model ready  →  {self.VISION_MODEL}")
+        try:
+            print(f"  Vision model ready -> {self.VISION_MODEL}")
+        except Exception:
+            pass
 
     
     def _image_to_base64(self, image_path: str) -> str:

@@ -23,32 +23,53 @@ load_dotenv()
 
 def _typing(msg: str, delay: float = 0.03):
     for ch in msg:
-        print(ch, end="", flush=True)
+        try:
+            print(ch, end="", flush=True)
+        except Exception:
+            pass
         time.sleep(delay)
     print()
 
 def _banner():
-    print("\n" + "─" * 54)
-    print("RESEARCH ASSISTANT")
-    print("─" * 54)
+    try:
+        print("\n" + "-" * 54)
+        print("RESEARCH ASSISTANT")
+        print("-" * 54)
+    except Exception:
+        pass
 
 def _thinking_dots(label: str = "Thinking", n: int = 3):
-    print(f"\n  {label}", end="", flush=True)
+    try:
+        print(f"\n  {label}", end="", flush=True)
+    except Exception:
+        pass
     for _ in range(n):
         time.sleep(0.4)
-        print(".", end="", flush=True)
+        try:
+            print(".", end="", flush=True)
+        except Exception:
+            pass
     print()
 
 def _section(title: str):
-    print(f"\n{'─'*54}")
-    print(f"  {title}")
-    print(f"{'─'*54}\n")
+    try:
+        print(f"\n{'-'*54}")
+        print(f"  {title}")
+        print(f"{'-'*54}\n")
+    except Exception:
+        pass
 
 def _ok(msg: str):
-    print(f"  ✓  {msg}")
+    try:
+        print(f"  [OK]  {msg}")
+    except Exception:
+        pass
 
 def _warn(msg: str):
-    print(f"  ⚠  {msg}")
+    try:
+        print(f"  [WARN]  {msg}")
+    except Exception:
+        pass
 
 
 # ──────────────────────────────────────────────────────────────
@@ -126,28 +147,41 @@ class Chatbot:
         self.agents: dict[str, ChatOllama] = {}
         self.judge:  ChatOllama | None     = None
         self.llm:    ChatOllama | None     = None
+        self.vision_llm: ChatOllama | None = None
 
     def load_llm(self):
-        _typing("\nSpinning up the model ensemble…")
-        for name in AGENT_MODELS:
-            self.agents[name] = ChatOllama(model=name, temperature=0.1)
-            _ok(f"Agent ready  →  {name}")
-        self.judge = ChatOllama(model=JUDGE_MODEL, temperature=0.2)
-        _ok(f"Judge  ready  →  {JUDGE_MODEL}\n")
-        self.llm = list(self.agents.values())[0]
+      _typing("\nSpinning up the model ensemble...")
+      for name in AGENT_MODELS:
+          self.agents[name] = ChatOllama(model=name, temperature=0.1)
+          _ok(f"Agent ready -> {name}")
+      self.judge = ChatOllama(model=JUDGE_MODEL, temperature=0.2)
+      _ok(f"Judge  ready -> {JUDGE_MODEL}\n")
+      self.llm = list(self.agents.values())[0]
+      
+      # Load vision model fallback
+      try:
+          self.vision_llm = ChatOllama(model="qwen2.5vl:3b", temperature=0.1)
+          _ok("Vision ready -> qwen2.5vl:3b")
+      except Exception:
+          try:
+              self.vision_llm = ChatOllama(model="llava:latest", temperature=0.1)
+              _ok("Vision ready -> llava:latest")
+          except Exception:
+              _warn("Vision model could not be loaded")
+              self.vision_llm = None
 
     def _query_agents(self, prompt: str) -> dict[str, str]:
-        responses: dict[str, str] = {}
-        for name, llm in self.agents.items():
-            print(f"  ↳ asking {name}…", end=" ", flush=True)
-            try:
-                result = llm.invoke(prompt)
-                responses[name] = result.content.strip()
-                print("done")
-            except Exception as exc:
-                responses[name] = f"[{name} failed: {exc}]"
-                print("failed")
-        return responses
+      responses: dict[str, str] = {}
+      for name, llm in self.agents.items():
+          print(f"  -> asking {name}...", end=" ", flush=True)
+          try:
+              result = llm.invoke(prompt)
+              responses[name] = result.content.strip()
+              print("done")
+          except Exception as exc:
+              responses[name] = f"[{name} failed: {exc}]"
+              print("failed")
+      return responses
 
     @staticmethod
     def _judge_prompt(original_question: str, responses: dict[str, str]) -> str:
@@ -267,7 +301,7 @@ if __name__ == "__main__":
             user_query = input("  What would you like to know about it? ").strip()
             _thinking_dots("Analysing the image")
             image_description = image_handler.analyze_image(
-                chatbot.llm, image_path, user_query
+                chatbot.vision_llm or chatbot.llm, image_path, user_query
             )
             print(f"\n  Image summary:\n  {image_description}\n")
             query = (

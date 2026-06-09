@@ -19,7 +19,7 @@ def load_all_documents(data_folder: str = None):
     """
 
     if data_folder is None:
-        data_folder = r"D:\DRDO PROJECT\RAG Assistant\Data"
+        data_folder = os.getenv("DATA_FOLDER", r"D:\DRDO PROJECT\RAG Assistant\Data")
 
     all_documents = []
 
@@ -40,26 +40,26 @@ def load_all_documents(data_folder: str = None):
 
     # ── PDFs ────────────────────────────────────────────────────
     if pdf_files:
-        print(f"\nLoading {len(pdf_files)} PDF file(s)…")
+        print(f"\nLoading {len(pdf_files)} PDF file(s)...")
         for pdf_path in pdf_files:
             loader = PyPDFLoader(pdf_path)
             docs   = loader.load()
             all_documents.extend(docs)
-            print(f"  ✓ {os.path.basename(pdf_path)}  ({len(docs)} page(s))")
+            print(f"  [OK] {os.path.basename(pdf_path)}  ({len(docs)} page(s))")
 
     # ── WAV audio ───────────────────────────────────────────────
     if wav_files:
-        print(f"\nTranscribing {len(wav_files)} audio file(s)…")
+        print(f"\nTranscribing {len(wav_files)} audio file(s)...")
         audio_parser = AudioParser()
         audio_parser.load_model()
         for wav_path in wav_files:
             docs = audio_parser.parse_audio(wav_path)
             all_documents.extend(docs)
-            print(f"  ✓ {os.path.basename(wav_path)}")
+            print(f"  [OK] {os.path.basename(wav_path)}")
 
     # ── Images ──────────────────────────────────────────────────
     if image_files:
-        print(f"\nDescribing {len(image_files)} image file(s) via vision model…")
+        print(f"\nDescribing {len(image_files)} image file(s) via vision model...")
         image_parser = ImageParser()
         image_parser.load_model()
         for img_path in image_files:

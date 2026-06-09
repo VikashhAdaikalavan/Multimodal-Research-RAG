@@ -1,3 +1,4 @@
+import os
 from langchain_chroma import Chroma
 import gc
 
@@ -7,7 +8,7 @@ class Retriever:
 
     def load_vector_store(self, embedding_model):
         self.vector_store = Chroma(
-            persist_directory= r"D:\DRDO PROJECT\RAG Assistant\ChromaDB",
+            persist_directory=os.getenv("DB_PATH", r"D:\DRDO PROJECT\RAG Assistant\ChromaDB"),
             embedding_function=embedding_model
         )
 

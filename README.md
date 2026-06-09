@@ -2,7 +2,8 @@
 
 A local web application for searching and asking questions about drone research papers and documents. It lets you type queries, record voice questions, or upload images (like schematics or photos of drones). The system retrieves relevant documentation from a vector database and answers using an ensemble of local models.
 
-The backend is built with FastAPI and the frontend is standard HTML, CSS, and plain JavaScript (no React or build steps needed).
+The Rag is built using Langchain and Ollama models
+The backend is built with FastAPI and the frontend is standard HTML, CSS, and plain JavaScript (no React or build steps needed) using Google Antigravity.
 
 ## Key Features
 
@@ -16,7 +17,7 @@ The backend is built with FastAPI and the frontend is standard HTML, CSS, and pl
 ## Tech Stack
 
 * **Frontend**: HTML5, CSS (with a custom dark glassmorphism design), and vanilla JavaScript.
-* **Backend**: FastAPI, PyPDF/PyMuPDF for reading documents, and ChromaDB for vector storage.
+* **Backend and Logic**: Langchain, PyPDF/PyMuPDF for reading documents, ChromaDB for vector storage, FastAPI.
 * **Models**:
   * Embedding Model: MiniLM-L6 (via sentence-transformers).
   * Chat/Ensemble: Ollama (running Mistral, Llama 3, Qwen).
@@ -43,7 +44,7 @@ You need the following installed on your machine:
 1. **Clone the project repository** and enter the directory:
    ```bash
    git clone <repository_url>
-   cd Antigravity-rag
+   cd Multimodal-Research-RAG
    ```
 
 2. **Create and activate a virtual environment**:
@@ -66,8 +67,8 @@ You need the following installed on your machine:
 4. **Set up environment variables**:
    Create a `.env` file in the root folder:
    ```env
-   DB_PATH=D:\DRDO PROJECT\Antigravity rag\ChromaDB
-   DATA_FOLDER=D:\DRDO PROJECT\Antigravity rag\Data
+   DB_PATH=<Database Folder Path>     # Ex. D:\DRDO PROJECT\Multimodal Research RAG\ChromaDB
+   DATA_FOLDER=<Data Folder Path>     # Ex. D:\DRDO PROJECT\Multimodal Research RAG\Data
    HOST=127.0.0.1
    PORT=8000
    ```

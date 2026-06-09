@@ -14,7 +14,10 @@ class EmbeddingModel:
         self.embedding_model = None
     def load_model(self):
         self.embedding_model = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
+            model_name="../models/all-MiniLM-L6-v2",
+            model_kwargs={
+            "local_files_only": True
+    }
         )
     def get_embedding_model(self):
         return self.embedding_model

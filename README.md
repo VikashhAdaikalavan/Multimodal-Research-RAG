@@ -29,14 +29,14 @@ The backend is built with FastAPI and the frontend is standard HTML, CSS, and pl
 You need the following installed on your machine:
 
 1. **Python 3.10+**
-2. **Ollama**: Download and run Ollama locally. You will need to pull these models:
+2. **Ollama**: Download and run Ollama locally from [ollama.com](https://ollama.com). You will need to pull these models:
    ```bash
    ollama pull mistral
    ollama pull llama3
    ollama pull qwen3:4b
    ollama pull qwen2.5vl:3b
    ```
-   *(If you prefer, you can pull `llava` as a fallback vision model instead of qwen2.5vl:3b)*
+   *(If you prefer, you can pull `llava` as a fallback vision model instead of `qwen2.5vl:3b`)*
 3. **FFmpeg**: Required on your system path so the whisper library can process audio files.
 
 ## Installation and Run Guide
@@ -64,7 +64,14 @@ You need the following installed on your machine:
    pip install -r requirements.txt
    ```
 
-4. **Set up environment variables**:
+4. **Download the Embedding Model locally**:
+   Since the embedding pipeline is configured to run completely offline (using `local_files_only: True`), you must pre-download the sentence-transformers model files to your local system:
+   ```bash
+   python src/saving_embedding_model.py
+   ```
+   This will download the `sentence-transformers/all-MiniLM-L6-v2` model from Hugging Face and save it to the local directory `models/all-MiniLM-L6-v2/` in the project root.
+
+5. **Set up environment variables**:
    Create a `.env` file in the root folder:
    ```env
    DB_PATH=<Database Folder Path>     # Ex. D:\DRDO PROJECT\Multimodal Research RAG\ChromaDB
@@ -74,7 +81,7 @@ You need the following installed on your machine:
    ```
    Make sure the paths match where you want database files and document uploads to live on your machine.
 
-5. **Start the application**:
+6. **Start the application**:
    * **To run the Web UI**:
      ```bash
      cd src
@@ -95,6 +102,8 @@ You need the following installed on your machine:
 ```text
 ├── ChromaDB/                # Persisted ChromaDB Vector store directory
 ├── Data/                    # Ingested documents (PDFs, wav, images)
+├── models/                  # Local Hugging Face models (offline cache)
+│   └── all-MiniLM-L6-v2/    # Saved sentence-transformers embedding model
 ├── requirements.txt         # Required python packages
 ├── .env                     # Local configuration paths
 └── src/
@@ -102,6 +111,7 @@ You need the following installed on your machine:
     ├── main.py              # CLI loop entrypoint
     ├── Retriver.py          # Vector search query and prompt construction
     ├── embedding_pipeline.py# Embedding generation and text splitter
+    ├── saving_embedding_model.py # Downloads & saves embedding model locally
     ├── parser.py            # Reads PDFs, WAVs, and images
     ├── Image_Input.py       # Interacts with local vision models
     ├── Image_Parser.py      # Vision parser for library image indexing

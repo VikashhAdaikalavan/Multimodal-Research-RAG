@@ -21,6 +21,7 @@ let conversationHistory = [];
 
 // --- Initialize App ---
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   setupTabs();
   checkSystemStatus();
   loadDocumentList();
@@ -29,6 +30,39 @@ document.addEventListener('DOMContentLoaded', () => {
   checkIngestStatus();
   pollIngestInterval = setInterval(checkIngestStatus, 3000);
 });
+
+// --- Theme Switcher ---
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeUI(savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeUI(newTheme);
+}
+
+function updateThemeUI(theme) {
+  const themeText = document.getElementById('theme-text');
+  const lightIcon = document.querySelector('.theme-icon-light');
+  const darkIcon = document.querySelector('.theme-icon-dark');
+  
+  if (!themeText || !lightIcon || !darkIcon) return;
+  
+  if (theme === 'light') {
+    themeText.textContent = 'Dark Mode';
+    lightIcon.style.display = 'none';
+    darkIcon.style.display = 'block';
+  } else {
+    themeText.textContent = 'Light Mode';
+    lightIcon.style.display = 'block';
+    darkIcon.style.display = 'none';
+  }
+}
 
 // --- Tab Switching ---
 function setupTabs() {
